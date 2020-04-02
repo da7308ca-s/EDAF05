@@ -1,3 +1,6 @@
+import time
+import sys
+
 N = int(input())
 men = [None]*N
 women = [None]*N
@@ -55,9 +58,11 @@ def print_lists():
 	for w in women:
 		print(w)
 
-read_input_v1()
-#print_lists()
+start = time.time()
+read_input_v2()
+read_input_time = time.time()-start
 
+start = time.time()
 while len(men) is not 0:
 	m = men.pop(0) #Next man to propose
 	w = women[m.pop(1)-1] #His first choice
@@ -69,9 +74,17 @@ while len(men) is not 0:
 		men.append(current_partner)
 	else: #If she prefers her current partner nothing happens except the current proposing man cant propose to the same woman again
 		men.append(m)
+gale_shapley_time = time.time()-start
 
-#Print the results
-for w in women:
-	print(w[0][0])
+#Print the results 
+if sys.argv[1] == "1":
+	print("Read input time:", read_input_time)
+	print("Gale Shapley time:", gale_shapley_time)
+	print("Total", read_input_time+gale_shapley_time)
+else:
+	for w in women:
+		print(w[0][0])
+
+
 
 
