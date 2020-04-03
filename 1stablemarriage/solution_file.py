@@ -49,17 +49,8 @@ def read_input_v2():
 		else:
 			men[index] = temp
 
-#Helper method for debugging
-def print_lists():
-	print("Men")
-	for m in men:
-		print(m)
-	print("Women")
-	for w in women:
-		print(w)
-
 start = time.time()
-read_input_v2()
+read_input_v1()
 read_input_time = time.time()-start
 
 start = time.time()
@@ -71,16 +62,18 @@ while len(men) is not 0:
 		w[0] = m 
 	elif w[m[0]] < w[current_partner[0]]: #If shes not free but prefers the new guy, swap and put the previous guy back in the queue
 		w[0] = m
-		men.append(current_partner)
+		men.append(current_partner) 
 	else: #If she prefers her current partner nothing happens except the current proposing man cant propose to the same woman again
 		men.append(m)
 gale_shapley_time = time.time()-start
 
 #Print the results 
-if sys.argv[1] == "1":
+if len(sys.argv) >= 2 and sys.argv[1] == "1":
+	print("----------------------------------")
 	print("Read input time:", read_input_time)
 	print("Gale Shapley time:", gale_shapley_time)
 	print("Total", read_input_time+gale_shapley_time)
+	print("----------------------------------")
 else:
 	for w in women:
 		print(w[0][0])
