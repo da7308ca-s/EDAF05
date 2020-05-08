@@ -1,3 +1,6 @@
+import sys
+import time
+
 class Tree:
 	def __init__(self,node_indices, weight = 0):
 		self.nodes = node_indices #The indices of the nodes that make up this tree
@@ -6,8 +9,12 @@ class Tree:
 	#Connect a tree to this tree
 	def adopt(self,tree, w):
 		self.nodes += tree.nodes
-		self.weight += tree.weight +w
+		self.weight += tree.weight + w
 
+debug = "debug" in sys.argv
+
+if debug:
+	start = time.time()
 N, M = (int(x) for x in input().split()) #N = number of nodes, M = number of possible edges
 nodes = [Tree([i]) for i in range(N)] #One slot for every node, where the element at index i is the tree that node i belongs to
 edges = [] #All the edges stored in a (node_index_1, node_index_2, weight) format
@@ -19,9 +26,21 @@ for i in range(M):
 	v = int(nums[1])-1
 	w = int(nums[2])
 	edges.append((u,v,w))
+if debug:
+	print('{:20}'.format("Read input"), time.time()-start)
 
 #Sort the edges by their weight and iterate through them
-for u, v, w in sorted(edges,key = lambda s: s[2]): #u = node_index_1, v = node_index_2, w = weight
+if debug:
+	start = time.time()
+edges = sorted(edges,key = lambda s: s[2])
+if debug:
+	print('{:20}'.format("Sort edges"), time.time()-start)
+
+if debug:
+	start = time.time()
+
+#Kruskals: O(M log M)
+for u, v, w in edges: #u = node_index_1, v = node_index_2, w = weight
 	t1, t2 = nodes[u], nodes[v] #The first and second tree
 
 	 #If the trees are not the same, connect them
@@ -39,5 +58,8 @@ for u, v, w in sorted(edges,key = lambda s: s[2]): #u = node_index_1, v = node_i
 
 		#If a tree connects all nodes, finish and print the weight of that tree
 		if len(t1.nodes) == N:
-			print(t1.weight)
+			if not debug:
+				print(t1.weight)
 			break
+if debug:
+	print('{:20}'.format("Kruskals"), time.time()-start)

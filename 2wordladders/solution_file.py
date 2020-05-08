@@ -1,4 +1,5 @@
 import sys
+import time
 
 class Node:
 	def __init__(self,word):
@@ -47,7 +48,7 @@ class Node:
 			text+= n.word + " "
 		print(text)
 
-#BFS for finding length of pass from start 
+#BFS for finding length of pass from start, O(|V| + |E|) since every node and every edge will be explored once in worstcase
 def find_path(start_node,goal):
 
 	#Create a queue (list in python) and mark the first node as discovered 
@@ -70,28 +71,52 @@ def find_path(start_node,goal):
 				queue.append(child)
 	return "Impossible"
 
+debug = "debug" in sys.argv
+
 #Read input parameters
 N, Q = (int(x) for x in input().split())
 
+if debug:
+	start = time.time()
 #Store the nodes in a dict for faster lookup
 nodes = {}
 for i in range(N):
 	word = input()
 	nodes[word] = Node(word)
 
+if debug:
+	print('{:20}'.format("Initiate nodes"), time.time()-start)
+
+if debug:
+	start = time.time()
 queries = []
 for i in range(Q):
 	queries.append(input().split())
+if debug:
+	print('{:20}'.format("Read queries"), time.time()-start)
+
+if debug:
+	start = time.time()
 
 #Find the arcs for each node
 for n in nodes.values():
 	n.find_arcs(nodes)
 
+if debug:
+	print('{:20}'.format("Find arcs for each node"), time.time()-start)
+
+if debug:
+	t = time.time()
+
 #Find the path for each query
 for start, goal in queries:
-	print(find_path(nodes[start],goal))
+	if not debug:	
+		print(find_path(nodes[start],goal))
 
 	#Dont forget to reset the discovered label and level attribute between each query
 	for n in nodes.values():
 		n.discovered = False
 		n.level = 0
+
+if debug:
+	print('{:20}'.format("BFS"), time.time()-t)
