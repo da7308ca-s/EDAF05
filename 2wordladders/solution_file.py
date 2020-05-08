@@ -71,17 +71,15 @@ def find_path(start_node,goal):
 	return "Impossible"
 
 #Read input parameters
-nums = input().split()
-N = int(nums[0])
-Q = int(nums[1])
+N, Q = (int(x) for x in input().split())
 
 #Store the nodes in a dict for faster lookup
 nodes = {}
-queries = []
 for i in range(N):
 	word = input()
 	nodes[word] = Node(word)
 
+queries = []
 for i in range(Q):
 	queries.append(input().split())
 
@@ -93,9 +91,7 @@ for n in nodes.values():
 for start, goal in queries:
 	print(find_path(nodes[start],goal))
 
-	#Dont forget to reset the discovered and level attribute between each query
+	#Dont forget to reset the discovered label and level attribute between each query
 	for n in nodes.values():
 		n.discovered = False
 		n.level = 0
-
-
