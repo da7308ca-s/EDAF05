@@ -12,6 +12,19 @@ def dist(p1,p2):
 def bruteForce(points):
 	start = time.time()
 	min_dist = math.inf
+	for i, p1 in enumerate(points):
+		j = i+1;
+		while j<len(points):
+			p2 = points[j]
+			min_dist = min(dist(p1,p2),min_dist)
+			j+=1
+	if debug:
+		timers["bruteForce"]+= time.time()-start
+	return min_dist
+
+def bruteForce2(points):
+	start = time.time()
+	min_dist = math.inf
 	for p1 in points:
 		for p2 in points:
 			if not p1 is p2:
@@ -20,6 +33,8 @@ def bruteForce(points):
 		timers["bruteForce"]+= time.time()-start
 	return min_dist
 
+#This method seems to be an O(n^2), buts is only O(n) since the inner
+#loop runs at most 6 times
 def closestInStrip(strip,d):
 	start = time.time()
 	for i in range(len(strip)):
@@ -31,6 +46,7 @@ def closestInStrip(strip,d):
 		timers["closestInStrip"]+= time.time()-start
 	return d
 
+#sort points in O(nLogn)
 def sortPoints(points):
 	start = time.time()
 	px = sorted(points,key = lambda s: s[0])
@@ -39,6 +55,7 @@ def sortPoints(points):
 		timers["sortPoints"]= time.time()-start
 	return px, py
 
+#Complexity O(nLogn)
 def f(px, py, n):
 	if n<4:
 		return(bruteForce(px))
@@ -58,6 +75,7 @@ def f(px, py, n):
 	if debug:
 		timers["divideYpoints"] += time.time()-start
 
+	#Recursive call for min dist in both sets
 	d = min(f(pxl,pyl,mid),f(pxr,pyr,n-mid))
 
 	start = time.time()
@@ -77,14 +95,14 @@ timers = {"total": 0, "closestInStrip": 0, "bruteForce": 0, "dist": 0, "sortPoin
 N = int(input())
 points = [[int(x) for x in input().split()] for i in range(N)]
 
-#Sort points by x and y coordinates in two lists
+#Sort points by x and y coordinates in two lists using O(nLogn )
 px, py = sortPoints(points)
 
 start = time.time()
 res = "%.6f" %round(f(px,py,N),6)
 if debug:
 	print("Statistics for input of " + str(N) + " points")
-	timers["total"]= time.time()-start
+	timers["total"] = time.time()-start
 	timers = sorted(timers.items(), key=lambda item: item[1])
 	for k,v in timers[::-1]:
 		print('{:20}'.format(k) + " " + "%.6f" %v)
