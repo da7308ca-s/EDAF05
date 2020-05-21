@@ -4,20 +4,57 @@
 \usepackage{booktabs}
 \usepackage{microtype}
 \usepackage[colorinlistoftodos]{todonotes}
+\usepackage{pgfgantt}
+\usepackage{titling}
+\usepackage{float}
+\usepackage{biblatex}
+\usepackage{amsmath,amssymb,graphicx}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{hyperref} 
+\usepackage[export]{adjustbox}
+\usepackage[shortlabels]{enumitem}
 \pagestyle{empty}
 
 \title{Stable Matching Report}
-\author{Author 1 and Author 2}
+\author{da7308ca-s and em0055ga-s}
 
 \begin{document}
   \maketitle
 
   \section{Results}
 
-  \todo[inline]{Briefly comment the results, did the script say all your solutions were correct? Approximately how long time does it take for the program to run on the largest input? What takes the majority of the time?}
+
+%  \todo[inline]{Briefly comment the results, did the script say all your solutions were correct? Approximately how long time does it take for the program to run on the largest input? What takes the majority of the time?}
+  
+  The test script said all of the solutions were correct.
+  \\\\
+  Below are 2 screenshots showing the execution time on the different inputs. As we can see what actually takes time is parsing the input and creating the initial lists of men and women. Because of this we created two method's for reading the input hoping we would be able to cut down on execution time. 
+  
+  \begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{.48\linewidth}
+  \includegraphics[width=\linewidth]{res1.png}
+  \centering
+    \caption{Results using the first method for input reading}
+  \end{subfigure}
+  ~
+  \begin{subfigure}[t]{.48\linewidth}
+  \includegraphics[width=\linewidth]{res2.png}
+  \centering
+  \caption{Results using the second method for input reading}
+  \end{subfigure}
+\end{figure}
+   The second method for input parsing saves all the input numbers to a list and then creates the man and woman structures by extracting from this list. We thought this could be sped up by simply skipping the save to an in-between list, which is what the first method tries to achieve. To our surprise though the first one is slower and we fail to understand why. 
 
   \section{Implementation details}
 
-  \todo[inline]{How did you implement the solution? Which data structures were used? Which modifications to these data structures were used? What is the overall running time? Why?}
+  %\todo[inline]{How did you implement the solution? Which data structures were used? Which modifications to these data structures were used? What is the overall running time? Why?}
+  
+  The program starts of by reading all the input data into 2 python lists, one for men and one for women. The one for men is structured as follows: For every man there is entry in the list and every entry consists of a list with first the index of the man and then his N preferences. The one for women is structured as follows: For every woman there is an entry which consists of a list with first a reference to the man she is paired with (None if single) followed by her rating of man number one in list slot one, rating of man number 2 in slot 2 and so on. This is for faster lookup when comparing two partners as explained in lecture 1. 
+  \\\\
+  When running the Gale-Shapley algorithm we simply loop over the list of men extracting the first element/man. We then lookup which woman he wants to propose to by popping the second element in the list (the first element is the mans index). The man then "proposes" to the woman, from which we can have 3 results. If the woman is single they create a pair and a reference to this man is saved with the woman. If the woman already had a partner but prefers a new one we swap and put the previous partner back into the end of the list of men. If the woman prefers her previous partner essentially nothing happens, but for the fact that we popped one element from the mans preference list so that next time it's his time to propose he won't propose to the same woman again.
+  \\\\
+  Finally when every man has paired up, we simply loop over the women's list and print the index of the man she is paired with.
 
 \end{document}
