@@ -13,7 +13,7 @@ class Graph:
 		self.source = source
 		self.sink = sink
    
-	def BFS(self,s, t, parent):
+	def BFS(self,s, t, path):
 		visited =[False]*(self.ROW)   
 		queue=[self.source] 
 		visited[s] = True
@@ -23,34 +23,55 @@ class Graph:
 				if visited[ind] == False and val > 0 : 
 					queue.append(ind) 
 					visited[ind] = True
-					parent[ind] = u 
+					path[ind] = u 
 		return True if visited[t] else False
 	  
 	# Fill in paths with FordFulkerson
-	def FordFulkerson(self): 
+	def FillGraph(self): 
 
 		#List for storing path
-		parent = [-1]*(self.ROW)
-		while self.BFS(self.source, self.sink, parent) : 
+		path = [-1]*(self.ROW)
+		while self.BFS(self.source, self.sink, path) : 
 
 			#Find the flow along the path
 			path_flow = float("Inf") 
 			s = self.sink 
 			while(s !=  self.source): 
-				path_flow = min (path_flow, self.graph[parent[s]][s]) 
-				s = parent[s] 
-			self.paths.append([copy.deepcopy(parent),path_flow])
+				path_flow = min (path_flow, self.graph[path[s]][s]) 
+				s = path[s] 
+			self.paths.append([copy.deepcopy(path),path_flow])
 			# Add path flow to overall flow 
   
 			#Take away the capacity of the path
 			v = self.sink 
 			while(v !=  self.source): 
-				u = parent[v] 
+				u = path[v] 
 				self.graph[u][v] -= path_flow 
 				self.graph[v][u] -= path_flow 
-				v = parent[v] 
-			print("graph")
-			print_matrix(self.graph)
+				v = path[v] 
+
+	def RemoveEdgeAndGetNewFlow(self,edge):
+		a, b, edge_flow = edge
+		remove_indices = []
+		for i, p in enumerate(self.paths):
+			path, path_flow = p
+			if self.hasEdge(a,b,path):
+				remove_indices.append(i)
+				v = self.sink 
+				while(v !=  self.source): 
+					u = path[v] 
+					self.graph[u][v] += path_flow 
+					self.graph[v][u] += path_flow 
+					v = path[v]
+
+		for i in remove_indices[::-1]:
+			self.paths.pop(i)
+
+		#Close the capacity of the edge we are taking away
+		self.graph[a][b] -= edge_flow 
+		self.graph[b][a] -= edge_flow 
+		self.FillGraph()
+		return self.GetMaxFlow()
 
 	def GetMaxFlow(self):
 		max_flow = 0
@@ -58,10 +79,14 @@ class Graph:
 			max_flow += path_flow
 		return max_flow
 
-def remove_edge(graph_matrix,edge):
-	i,j, _ = edge
-	graph_matrix[i][j] = graph_matrix[j][i] = 0
-	return graph_matrix
+	def hasEdge(self,u,v,path):
+		s = self.sink 
+		while(s !=  self.source): 
+			if s == u and path[s] == v or s == v and path[s] == u:
+				return True 
+			s = path[s] 
+		return False
+
 
 def print_matrix(matrix):
 	for m in matrix:
@@ -81,4 +106,12 @@ for i,j,flow in edges:
 	graph_matrix[i][j] = graph_matrix[j][i] = flow
 
 graph = Graph(graph_matrix,0, N-1)
-graph.FordFulkerson()
+graph.FillGraph()
+prev_flow = graph.GetMaxFlow()
+for i, j in enumerate(remove_order):
+	new_flow = graph.RemoveEdgeAndGetNewFlow(edges[j])
+	if new_flow<C:
+		print(str(i) + " " + str(prev_flow))
+		break
+	prev_flow = new_flow
+	
