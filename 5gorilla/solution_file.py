@@ -3,8 +3,9 @@ import time
 import sys
 
 sys.setrecursionlimit(10000)
+
 chars2index = {x:i for i,x in enumerate(input().split())} #Convert character to index in alpha matrix
-alpha = [[int(x) for x in input().split()] for k in range(len(chars2index))] #value of pairing to characters
+alpha = [[int(x) for x in input().split()] for k in range(len(chars2index))] #value of pairing two characters
 Q = int(input())
 words = [[x for x in input().split()] for i in range(Q)] #Read the sequences
 delta = -4
@@ -59,12 +60,11 @@ for s,t in words:
 	#print("index",index)
 	for step in steps:
 		if i == 0:
-			for k in range(j,-1,-1):
-				if not k == index:
-					#print("k", k)
-					sl.insert(k,"*")
-			break
-		if j == 0:
+			m = -1000
+			for k in range(i+1):
+				if alpha[chars2index[s[k]]][chars2index[t[j]]] >= m:
+					m = alpha[chars2index[s[k]]][chars2index[t[j]]]
+					index = k
 			for k in range(i,-1,-1):
 				if not k == index:
 					#print("k", k)
